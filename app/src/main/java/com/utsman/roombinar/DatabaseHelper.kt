@@ -27,7 +27,7 @@ class DatabaseHelper(private val context: Context) {
         return@withContext productDao.getProductById(id)
     }
 
-    fun addProduct(product: Product) = GlobalScope.launch {
+    suspend fun addProduct(product: Product) = withContext(Dispatchers.IO) {
         productDao.addProduct(product)
     }
 
