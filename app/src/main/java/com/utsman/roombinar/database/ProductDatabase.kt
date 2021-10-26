@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.utsman.roombinar.dao.ProductDao
 import com.utsman.roombinar.entity.Product
 
-@Database(entities = [Product::class], version = 1)
+@Database(entities = [Product::class], version = 2)
 abstract class ProductDatabase : RoomDatabase() {
     abstract fun productDao(): ProductDao
 
@@ -16,7 +16,9 @@ abstract class ProductDatabase : RoomDatabase() {
         private var instance: ProductDatabase? = null
 
         private fun buildDatabase(context: Context): ProductDatabase {
-            return Room.databaseBuilder(context, ProductDatabase::class.java, "product_db").build()
+            return Room.databaseBuilder(context, ProductDatabase::class.java, "product_db")
+                .fallbackToDestructiveMigration()
+                .build()
         }
 
         fun getInstance(context: Context): ProductDatabase {

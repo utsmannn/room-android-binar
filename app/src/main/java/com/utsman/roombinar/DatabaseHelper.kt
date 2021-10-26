@@ -4,6 +4,10 @@ import android.content.Context
 import com.utsman.roombinar.dao.ProductDao
 import com.utsman.roombinar.database.ProductDatabase
 import com.utsman.roombinar.entity.Product
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DatabaseHelper(private val context: Context) {
 
@@ -15,23 +19,23 @@ class DatabaseHelper(private val context: Context) {
         productDatabase.productDao()
     }
 
-    fun getProducts(): List<Product> {
-        return productDao.getProductAll()
+    suspend fun getProducts(): List<Product> = withContext(Dispatchers.IO) {
+        return@withContext productDao.getProductAll()
     }
 
-    fun getProductById(id: Int): Product {
-        return productDao.getProductById(id)
+    suspend fun getProductById(id: Int): Product = withContext(Dispatchers.IO) {
+        return@withContext productDao.getProductById(id)
     }
 
-    fun addProduct(product: Product) {
+    fun addProduct(product: Product) = GlobalScope.launch {
         productDao.addProduct(product)
     }
 
-    fun updateProduct(product: Product) {
+    fun updateProduct(product: Product) = GlobalScope.launch {
         productDao.updateProduct(product)
     }
 
-    fun deleteProduct(product: Product) {
+    fun deleteProduct(product: Product) = GlobalScope.launch {
         productDao.deleteProduct(product)
     }
 }
