@@ -2,17 +2,17 @@ package com.utsman.roombinar
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.utsman.roombinar.entity.Product
+import com.utsman.roombinar.presenter.MainPresenter
+import com.utsman.roombinar.presenter.MainPresenterImpl
+import com.utsman.roombinar.view.MainView
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainView {
 
     private val TAG = "LOG_MAIN_DATABASE"
 
@@ -24,11 +24,13 @@ class MainActivity : AppCompatActivity() {
 
     private var counter = 0
 
+    private val mainPresenter: MainPresenter by lazy {
+        MainPresenterImpl(this, this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        val databaseHelper = DatabaseHelper(this)
 
         rvProduct.layoutManager = LinearLayoutManager(this)
         rvProduct.adapter = productAdapter
@@ -43,23 +45,17 @@ class MainActivity : AppCompatActivity() {
             )
 
             MainScope().launch {
-                databaseHelper.addProduct(product)
+                mainPresenter.addProduct(product)
                 counter += 1
 
-                val products = databaseHelper.getProducts()
-                println("products====")
-                println(products)
-                runOnUiThread {
-                    productAdapter.addProduct(products)
-                }
+                mainPresenter.getProducts()
             }
         }
+    }
 
-        /*btnGetProduct.setOnClickListener {
-            MainScope().launch {
-
-            }
-        }*/
-
+    override fun onGetProducts(products: List<Product>) = runOnUiThread {
+        println("products====")
+        println(products)
+        productAdapter.addProduct(products)
     }
 }
